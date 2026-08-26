@@ -1,0 +1,52 @@
+from configparser import ConfigParser
+import os
+
+from dotenv import load_dotenv
+
+class ConfigReader:
+    """
+    Read framework configuration and environment variables.
+    """
+    def __init__(self):
+        load_dotenv()
+        self.config = ConfigParser()
+        self.config.read("config/config.ini")
+
+    @property
+    def base_url(self):
+        """Return the configured API base URL."""
+        return self.config["application"]["base_url"]
+
+    @property
+    def timeout(self):
+        """Return the API request timeout."""
+        return int(self.config["execution"]["timeout"])
+
+    @property
+    def retry_count(self):
+        """Return the test retry count."""
+        return int(self.config["execution"]["retry_count"])
+
+    @property
+    def username(self):
+        """Return API username from environment variables."""
+        username = os.getenv("USERNAME")
+
+        if not username:
+            raise RuntimeError(
+                "USERNAME environment variable is not configured."
+            )
+
+        return username
+
+    @property
+    def password(self):
+        """Return API password from environment variables."""
+        password = os.getenv("PASSWORD")
+
+        if not password:
+            raise RuntimeError(
+                "PASSWORD environment variable is not configured."
+            )
+
+        return password
