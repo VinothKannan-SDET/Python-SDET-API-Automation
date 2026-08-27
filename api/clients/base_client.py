@@ -37,7 +37,7 @@ class BaseClient:
             timeout=self.timeout
         )
 
-    def post(self, endpoint, data=None, params=None, headers=None):
+    def post(self, endpoint, json=None, params=None, headers=None):
         """
         Send a POST request.
 
@@ -49,7 +49,7 @@ class BaseClient:
         """
         return self.session.post(
             url=f"{self.base_url}{endpoint}",
-            json=data,
+            json=json,
             params=params,
             headers=headers,
             timeout=self.timeout

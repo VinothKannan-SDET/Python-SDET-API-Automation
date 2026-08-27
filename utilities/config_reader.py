@@ -28,9 +28,9 @@ class ConfigReader:
         return int(self.config["execution"]["retry_count"])
 
     @property
-    def username(self):
+    def auth_username(self):
         """Return API username from environment variables."""
-        username = os.getenv("USERNAME")
+        username = os.getenv("AUTH_USERNAME")
 
         if not username:
             raise RuntimeError(
@@ -40,9 +40,9 @@ class ConfigReader:
         return username
 
     @property
-    def password(self):
+    def auth_password(self):
         """Return API password from environment variables."""
-        password = os.getenv("PASSWORD")
+        password = os.getenv("AUTH_PASSWORD")
 
         if not password:
             raise RuntimeError(
