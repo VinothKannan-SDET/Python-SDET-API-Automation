@@ -54,7 +54,7 @@ class BaseClient:
             headers=headers,
             timeout=self.timeout
         )
-    def put(self, endpoint, data=None, params=None, headers=None):
+    def put(self, endpoint, json=None, params=None, headers=None):
         """
         Send a PUT request.
 
@@ -66,18 +66,18 @@ class BaseClient:
         """
         return self.session.put(
             url=f"{self.base_url}{endpoint}",
-            json=data,
+            json=json,
             params=params,
             headers=headers,
             timeout=self.timeout
         )
 
-    def patch(self, endpoint, data=None, params=None, headers=None):
+    def patch(self, endpoint, json=None, params=None, headers=None):
         """
         Send a PATCH request.
 
         :param endpoint: API endpoint path
-        :param data: JSON request body
+        :param json: JSON request body
         :param params: Query parameters
         :param headers: Request headers
         :return: Response object
@@ -85,7 +85,7 @@ class BaseClient:
 
         return self.session.patch(
             url=f"{self.base_url}{endpoint}",
-            json=data,
+            json=json,
             params=params,
             headers=headers,
             timeout=self.timeout
