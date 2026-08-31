@@ -2,6 +2,10 @@ import json
 
 import allure
 
+from schemas.booking_schema import BOOKING_RESPONSE_SCHEMA
+from schemas.create_booking_schema import CREATE_BOOKING_RESPONSE_SCHEMA
+from utilities.schema_validator import validate_schema
+
 
 def test_get_booking(booking_client):
     """
@@ -12,6 +16,8 @@ def test_get_booking(booking_client):
     assert response.status_code == 200
 
     response_data = response.json()
+
+    validate_schema(response_data, BOOKING_RESPONSE_SCHEMA)
 
     assert "firstname" in response_data
     assert "lastname" in response_data
@@ -48,6 +54,9 @@ def test_create_booking(booking_client):
     assert response.status_code == 200
 
     response_data = response.json()
+
+    validate_schema(response_data, CREATE_BOOKING_RESPONSE_SCHEMA)
+
 
     assert "bookingid" in response_data
     assert isinstance(response_data["bookingid"], int)
