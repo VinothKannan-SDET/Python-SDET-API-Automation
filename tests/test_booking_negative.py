@@ -1,5 +1,7 @@
 import allure
+import pytest
 
+from test_data.booking_data import INVALID_BOOKING_DATA
 from utilities.api_utils import attach_response
 
 
@@ -19,14 +21,17 @@ def test_get_booking_invalid_id(booking_client):
     assert response.text == "Not Found"
 
 @allure.title("Verify create booking with invalid payload")
-def test_create_booking_invalid_payload(booking_client):
+@pytest.mark.parametrize("invalid_booking_data", [
+    pytest.param(INVALID_BOOKING_DATA, id = "Missing_required_fields")
+])
+def test_create_booking_invalid_payload(booking_client, invalid_booking_data):
     """
     Verify that booking creation handles an invalid payload.
     """
 
-    invalid_booking_data = {
-        "firstname": "John",
-    }
+    # invalid_booking_data = {
+    #     "firstname": "John",
+    # }
 
     response = booking_client.create_booking(invalid_booking_data)
 

@@ -1,10 +1,11 @@
 import json
-
 import allure
-
+import pytest
 from schemas.booking_schema import BOOKING_RESPONSE_SCHEMA
 from schemas.create_booking_schema import CREATE_BOOKING_RESPONSE_SCHEMA
+from test_data.booking_data import VALID_BOOKING_DATA
 from utilities.schema_validator import validate_schema
+from test_data.booking_data import VALID_BOOKING_DATA, VALID_BOOKING_DATA_2
 
 
 def test_get_booking(booking_client):
@@ -26,23 +27,13 @@ def test_get_booking(booking_client):
     print(f"Booking Price: {response_data['totalprice']}")
     print(f"Booking date checkin: {response_data['bookingdates']['checkin']}")
 
-def test_create_booking(booking_client):
+@pytest.mark.parametrize("booking_data", [
+    pytest.param(VALID_BOOKING_DATA, id="Valid_booking_John"),
+    pytest.param(VALID_BOOKING_DATA_2, id="Valid_booking_Alice")])
+def test_create_booking(booking_client, booking_data):
     """
     Verify that a new booking can be created successfully.
     """
-
-    booking_data = {
-        "firstname": "John",
-        "lastname": "Doe",
-        "totalprice": 150,
-        "depositpaid": True,
-        "bookingdates": {
-            "checkin": "2026-09-01",
-            "checkout": "2026-09-05"
-        },
-        "additionalneeds": "Breakfast"
-    }
-
     allure.attach(
         json.dumps(booking_data, indent=4),
         name="Request Payload",
@@ -57,15 +48,14 @@ def test_create_booking(booking_client):
 
     validate_schema(response_data, CREATE_BOOKING_RESPONSE_SCHEMA)
 
-
     assert "bookingid" in response_data
     assert isinstance(response_data["bookingid"], int)
 
     assert "booking" in response_data
 
-    assert response_data["booking"]["firstname"] == "John"
-    assert response_data["booking"]["lastname"] == "Doe"
-    assert response_data["booking"]["totalprice"] == 150
+    assert response_data["booking"]["firstname"] == booking_data["firstname"]
+    assert response_data["booking"]["lastname"] == booking_data["lastname"]
+    assert response_data["booking"]["totalprice"] == booking_data["totalprice"]
     assert response_data["booking"]["depositpaid"] is True
 
 def test_create_and_get_booking(booking_client):

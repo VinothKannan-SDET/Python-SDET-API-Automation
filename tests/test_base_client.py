@@ -29,7 +29,7 @@ def test_post_booking(client):
 
     response = client.post(
         "/booking",
-        data=booking_data
+        json=booking_data
     )
 
     assert response.status_code == 200
