@@ -5,6 +5,8 @@ from schemas.booking_schema import BOOKING_RESPONSE_SCHEMA
 from schemas.create_booking_schema import CREATE_BOOKING_RESPONSE_SCHEMA
 from test_data.booking_data import VALID_BOOKING_DATA
 from utilities import logger
+from utilities.assertions import assert_status_code, assert_json_field_exists, assert_nested_json_value, \
+    assert_response_is_json
 from utilities.schema_validator import validate_schema
 from test_data.booking_data import VALID_BOOKING_DATA, VALID_BOOKING_DATA_2
 
@@ -14,16 +16,16 @@ def test_get_booking(booking_client):
     Verify that an existing booking can be retrieved.
     """
     response = booking_client.get_booking(1)
+    assert_status_code(response, 200)
 
-    assert response.status_code == 200
-
+    assert_response_is_json(response)
     response_data = response.json()
 
     validate_schema(response_data, BOOKING_RESPONSE_SCHEMA)
 
-    assert "firstname" in response_data
-    assert "lastname" in response_data
-    assert "bookingdates" in response_data
+    assert_json_field_exists(response_data, "firstname")
+    assert_json_field_exists(response_data, "lastname")
+    assert_json_field_exists(response_data, "bookingdates")
 
 
 @pytest.mark.parametrize("booking_data", [
@@ -41,21 +43,21 @@ def test_create_booking(booking_client, booking_data):
 
     response = booking_client.create_booking(booking_data)
 
-    assert response.status_code == 200
+    assert_status_code(response, 200)
 
+    assert_response_is_json(response)
     response_data = response.json()
 
     validate_schema(response_data, CREATE_BOOKING_RESPONSE_SCHEMA)
 
-    assert "bookingid" in response_data
-    assert isinstance(response_data["bookingid"], int)
+    print(f"Response Data: {response_data}")  # Debugging line
 
-    assert "booking" in response_data
-
-    assert response_data["booking"]["firstname"] == booking_data["firstname"]
-    assert response_data["booking"]["lastname"] == booking_data["lastname"]
-    assert response_data["booking"]["totalprice"] == booking_data["totalprice"]
-    assert response_data["booking"]["depositpaid"] is True
+    assert_json_field_exists(response_data, "bookingid")
+    assert_json_field_exists(response_data, "booking")
+    assert_nested_json_value(response_data, "booking.firstname", booking_data["firstname"])
+    assert_nested_json_value(response_data, "booking.lastname", booking_data["lastname"])
+    assert_nested_json_value(response_data, "booking.totalprice", booking_data["totalprice"])
+    assert_nested_json_value(response_data, "booking.depositpaid", True)
 
 def test_create_and_get_booking(booking_client):
     """
@@ -78,8 +80,9 @@ def test_create_and_get_booking(booking_client):
     # Step 1: Create a new booking
     create_response = booking_client.create_booking(booking_data)
 
-    assert create_response.status_code == 200
+    assert_status_code(create_response, 200)
 
+    assert_response_is_json(create_response)
     create_response_data = create_response.json()
 
     # Step 2: Extract dynamically generated booking ID
@@ -90,11 +93,13 @@ def test_create_and_get_booking(booking_client):
     # Step 3: Retrieve the newly created booking
     get_response = booking_client.get_booking(booking_id)
 
-    assert get_response.status_code == 200
+    assert_status_code(get_response, 200)
 
+    assert_response_is_json(get_response)
     get_response_data = get_response.json()
 
     # Step 4: Verify the retrieved booking data
+
     assert get_response_data["firstname"] == "David"
     assert get_response_data["lastname"] == "Miller"
     assert get_response_data["totalprice"] == 200
@@ -130,7 +135,8 @@ def test_update_booking(booking_client, auth_token):
 
     create_response = booking_client.create_booking(create_data)
 
-    assert create_response.status_code == 200
+    assert_status_code(create_response, 200)
+    assert_response_is_json(create_response)
 
     booking_id = create_response.json()["bookingid"]
 
@@ -152,8 +158,8 @@ def test_update_booking(booking_client, auth_token):
         booking_id, update_data, auth_token
     )
 
-    assert update_response.status_code == 200
-
+    assert_status_code(update_response, 200)
+    assert_response_is_json(update_response)
     # Step 4: Verify response
     updated_data = update_response.json()
 
@@ -167,8 +173,9 @@ def test_update_booking(booking_client, auth_token):
         booking_id
     )
 
-    assert get_response.status_code == 200
+    assert_status_code(get_response, 200)
 
+    assert_response_is_json(get_response)
     retrieved_data = get_response.json()
 
     # Step 6: Verify persisted changes
@@ -198,7 +205,8 @@ def test_patch_booking(booking_client, auth_token):
         create_data
     )
 
-    assert create_response.status_code == 200
+    assert_status_code(create_response, 200)
+    assert_response_is_json(create_response)
 
     booking_id = create_response.json()["bookingid"]
 
@@ -214,7 +222,8 @@ def test_patch_booking(booking_client, auth_token):
         auth_token
     )
 
-    assert patch_response.status_code == 200
+    assert_status_code(patch_response, 200)
+    assert_response_is_json(patch_response)
 
     # Step 3: Verify PATCH response
     patched_data = patch_response.json()
@@ -231,8 +240,9 @@ def test_patch_booking(booking_client, auth_token):
         booking_id
     )
 
-    assert get_response.status_code == 200
+    assert_status_code(get_response, 200)
 
+    assert_response_is_json(get_response)
     retrieved_data = get_response.json()
 
     # Step 6: Verify persisted changes
@@ -265,7 +275,8 @@ def test_delete_booking(booking_client, auth_token):
         create_data
     )
 
-    assert create_response.status_code == 200
+    assert_status_code(create_response, 200)
+    assert_response_is_json(create_response)
 
     # Step 2: Extract dynamically generated booking ID
     booking_id = create_response.json()["bookingid"]
@@ -277,7 +288,7 @@ def test_delete_booking(booking_client, auth_token):
         booking_id
     )
 
-    assert get_response.status_code == 200
+    assert_status_code(get_response, 200)
 
     # Step 4: Delete the booking
     delete_response = booking_client.delete_booking(
@@ -285,11 +296,11 @@ def test_delete_booking(booking_client, auth_token):
         auth_token
     )
 
-    assert delete_response.status_code == 201
+    assert_status_code(delete_response, 201)
 
     # Step 5: Verify booking no longer exists
     verify_response = booking_client.get_booking(
         booking_id
     )
 
-    assert verify_response.status_code == 404
+    assert_status_code(verify_response, 404)

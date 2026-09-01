@@ -3,6 +3,7 @@ import pytest
 
 from test_data.booking_data import INVALID_BOOKING_DATA
 from utilities.api_utils import attach_response
+from utilities.assertions import assert_status_code
 
 
 @allure.title("Verify GET booking with invalid booking ID")
@@ -16,8 +17,7 @@ def test_get_booking_invalid_id(booking_client):
     response = booking_client.get_booking(invalid_booking_id)
 
     attach_response(response)
-
-    assert response.status_code == 404
+    assert_status_code(response, 404)
     assert response.text == "Not Found"
 
 @allure.title("Verify create booking with invalid payload")
@@ -36,8 +36,7 @@ def test_create_booking_invalid_payload(booking_client, invalid_booking_data):
     response = booking_client.create_booking(invalid_booking_data)
 
     attach_response(response)
-
-    assert response.status_code == 500
+    assert_status_code(response, 500)
     assert response.text == "Internal Server Error"
 
 @allure.title("Verify authentication with invalid credentials")
@@ -52,8 +51,7 @@ def test_generate_auth_token_invalid_credentials(auth_client):
     )
 
     attach_response(response)
-
-    assert response.status_code == 200
+    assert_status_code(response, 200)
 
     response_data = response.json()
 
