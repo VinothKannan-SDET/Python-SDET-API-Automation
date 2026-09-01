@@ -1,5 +1,8 @@
 import allure
 
+from utilities.api_utils import attach_request_payload, attach_response
+
+
 class BookingClient:
     """
     Client containing booking-specific API operations.
@@ -30,9 +33,14 @@ class BookingClient:
         :param booking_data: Booking request payload
         :return: API response
         """
+        attach_request_payload(booking_data)
 
-        return self.client.post("/booking",
+        response = self.client.post("/booking",
                                 json=booking_data,)
+
+        attach_response(response)
+
+        return response
 
     @allure.step("Update booking: {booking_id}")
     def update_booking(self, booking_id, booking_data, token):

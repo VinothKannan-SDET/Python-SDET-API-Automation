@@ -1,3 +1,5 @@
+import json
+
 import allure
 
 
@@ -29,3 +31,19 @@ def attach_response(response):
             name="Response Body",
             attachment_type=allure.attachment_type.TEXT
         )
+
+def attach_request_payload(payload):
+    """
+    Attach request payload to Allure.
+
+    :param payload: Request JSON payload
+    """
+
+    allure.attach(
+        json.dumps(
+            payload,
+            indent=4
+        ),
+        name="Request Payload",
+        attachment_type=allure.attachment_type.JSON
+    )

@@ -4,6 +4,7 @@ import pytest
 from schemas.booking_schema import BOOKING_RESPONSE_SCHEMA
 from schemas.create_booking_schema import CREATE_BOOKING_RESPONSE_SCHEMA
 from test_data.booking_data import VALID_BOOKING_DATA
+from utilities import logger
 from utilities.schema_validator import validate_schema
 from test_data.booking_data import VALID_BOOKING_DATA, VALID_BOOKING_DATA_2
 
@@ -23,9 +24,7 @@ def test_get_booking(booking_client):
     assert "firstname" in response_data
     assert "lastname" in response_data
     assert "bookingdates" in response_data
-    print(response_data)
-    print(f"Booking Price: {response_data['totalprice']}")
-    print(f"Booking date checkin: {response_data['bookingdates']['checkin']}")
+
 
 @pytest.mark.parametrize("booking_data", [
     pytest.param(VALID_BOOKING_DATA, id="Valid_booking_John"),

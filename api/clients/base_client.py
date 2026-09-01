@@ -2,7 +2,10 @@ import requests
 
 from utilities.config_reader import ConfigReader
 
+from utilities.logger import get_logger
+
 class BaseClient:
+    logger = get_logger(__name__)
     """
     Reusable base client for API communication.
 
@@ -30,12 +33,19 @@ class BaseClient:
         :param headers: Request headers
         :return: Response object
         """
-        return self.session.get(
-            url=f"{self.base_url}{endpoint}",
+        url = f"{self.base_url}{endpoint}"
+        self.logger.info("GET request: %s", url)
+
+        response = self.session.get(
+            url=url,
             params=params,
             headers=headers,
             timeout=self.timeout
         )
+
+        self.logger.info("GET response %s", response.status_code)
+
+        return response
 
     def post(self, endpoint, json=None, params=None, headers=None):
         """
@@ -47,13 +57,19 @@ class BaseClient:
         :param headers: Request headers
         :return: Response object
         """
-        return self.session.post(
-            url=f"{self.base_url}{endpoint}",
+        url = f"{self.base_url}{endpoint}"
+
+        self.logger.info("POST request: %s", url)
+        response = self.session.post(
+            url=url,
             json=json,
             params=params,
             headers=headers,
             timeout=self.timeout
         )
+        self.logger.info("POST response %s", response.status_code)
+        return response
+
     def put(self, endpoint, json=None, params=None, headers=None):
         """
         Send a PUT request.
@@ -64,13 +80,18 @@ class BaseClient:
         :param headers: Request headers
         :return: Response object
         """
-        return self.session.put(
+        url = f"{self.base_url}{endpoint}"
+        self.logger.info("PUT request: %s", url)
+
+        response = self.session.put(
             url=f"{self.base_url}{endpoint}",
             json=json,
             params=params,
             headers=headers,
             timeout=self.timeout
         )
+        self.logger.info("PUT response %s", response.status_code)
+        return response
 
     def patch(self, endpoint, json=None, params=None, headers=None):
         """
@@ -82,14 +103,18 @@ class BaseClient:
         :param headers: Request headers
         :return: Response object
         """
+        url = f"{self.base_url}{endpoint}"
+        self.logger.info("PATCH request: %s", url)
 
-        return self.session.patch(
-            url=f"{self.base_url}{endpoint}",
+        response = self.session.patch(
+            url=url,
             json=json,
             params=params,
             headers=headers,
             timeout=self.timeout
         )
+        self.logger.info("PATCH response %s", response.status_code)
+        return response
 
     def delete(self, endpoint, params=None, headers=None):
         """
@@ -100,10 +125,14 @@ class BaseClient:
         :param headers: Request headers
         :return: Response object
         """
+        url = f"{self.base_url}{endpoint}"
+        self.logger.info("DELETE request: %s", url)
 
-        return self.session.delete(
-            url=f"{self.base_url}{endpoint}",
+        response = self.session.delete(
+            url=url,
             params=params,
             headers=headers,
             timeout=self.timeout
         )
+        self.logger.info("DELETE response %s", response.status_code)
+        return response
