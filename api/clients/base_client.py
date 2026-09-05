@@ -52,7 +52,7 @@ class BaseClient:
         Send a POST request.
 
         :param endpoint: API endpoint path
-        :param data: JSON request body
+        :param json: JSON request body
         :param params: Query parameters
         :param headers: Request headers
         :return: Response object
@@ -75,7 +75,7 @@ class BaseClient:
         Send a PUT request.
 
         :param endpoint: API endpoint path
-        :param data: JSON request body
+        :param json: JSON request body
         :param params: Query parameters
         :param headers: Request headers
         :return: Response object
@@ -84,7 +84,7 @@ class BaseClient:
         self.logger.info("PUT request: %s", url)
 
         response = self.session.put(
-            url=f"{self.base_url}{endpoint}",
+            url=url,
             json=json,
             params=params,
             headers=headers,

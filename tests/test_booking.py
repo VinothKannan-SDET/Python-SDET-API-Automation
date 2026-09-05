@@ -3,8 +3,7 @@ import allure
 import pytest
 from schemas.booking_schema import BOOKING_RESPONSE_SCHEMA
 from schemas.create_booking_schema import CREATE_BOOKING_RESPONSE_SCHEMA
-from test_data.booking_data import VALID_BOOKING_DATA
-from utilities import logger
+from test_data.booking_factory import create_valid_booking
 from utilities.assertions import assert_status_code, assert_json_field_exists, assert_nested_json_value, \
     assert_response_is_json
 from utilities.schema_validator import validate_schema
@@ -28,13 +27,19 @@ def test_get_booking(booking_client):
     assert_json_field_exists(response_data, "bookingdates")
 
 
-@pytest.mark.parametrize("booking_data", [
-    pytest.param(VALID_BOOKING_DATA, id="Valid_booking_John"),
-    pytest.param(VALID_BOOKING_DATA_2, id="Valid_booking_Alice")])
-def test_create_booking(booking_client, booking_data):
+@pytest.mark.parametrize("firstname",
+                         [pytest.param("John",id="firstname_John"),
+                          pytest.param("David",id="firstname_David"),
+                          pytest.param("Michael",id="firstname_Michael")])
+def test_create_booking(booking_client, firstname):
     """
     Verify that a new booking can be created successfully.
     """
+
+    booking_data = create_valid_booking(
+        firstname=firstname
+    ).to_dict()
+
     allure.attach(
         json.dumps(booking_data, indent=4),
         name="Request Payload",
@@ -50,14 +55,12 @@ def test_create_booking(booking_client, booking_data):
 
     validate_schema(response_data, CREATE_BOOKING_RESPONSE_SCHEMA)
 
-    print(f"Response Data: {response_data}")  # Debugging line
-
     assert_json_field_exists(response_data, "bookingid")
     assert_json_field_exists(response_data, "booking")
     assert_nested_json_value(response_data, "booking.firstname", booking_data["firstname"])
     assert_nested_json_value(response_data, "booking.lastname", booking_data["lastname"])
     assert_nested_json_value(response_data, "booking.totalprice", booking_data["totalprice"])
-    assert_nested_json_value(response_data, "booking.depositpaid", True)
+    assert_nested_json_value(response_data, "booking.depositpaid", booking_data["depositpaid"])
 
 def test_create_and_get_booking(booking_client):
     """
@@ -65,17 +68,12 @@ def test_create_and_get_booking(booking_client):
         using the dynamically generated booking ID.
         """
 
-    booking_data = {
-        "firstname": "David",
-        "lastname": "Miller",
-        "totalprice": 200,
-        "depositpaid": True,
-        "bookingdates": {
-            "checkin": "2026-09-10",
-            "checkout": "2026-09-15"
-        },
-        "additionalneeds": "Breakfast"
-    }
+    booking_data = create_valid_booking(
+        firstname="David",
+        lastname="Miller",
+        checkin="2026-09-10",
+        checkout="2026-09-15"
+    ).to_dict()
 
     # Step 1: Create a new booking
     create_response = booking_client.create_booking(booking_data)
@@ -100,19 +98,19 @@ def test_create_and_get_booking(booking_client):
 
     # Step 4: Verify the retrieved booking data
 
-    assert get_response_data["firstname"] == "David"
-    assert get_response_data["lastname"] == "Miller"
-    assert get_response_data["totalprice"] == 200
-    assert get_response_data["depositpaid"] is True
+    assert get_response_data["firstname"] == booking_data["firstname"]
+    assert get_response_data["lastname"] == booking_data["lastname"]
+    assert get_response_data["totalprice"] == booking_data["totalprice"]
+    assert get_response_data["depositpaid"] is booking_data["depositpaid"]
 
     assert (
             get_response_data["bookingdates"]["checkin"]
-            == "2026-09-10"
+            == booking_data["bookingdates"]["checkin"]
     )
 
     assert (
             get_response_data["bookingdates"]["checkout"]
-            == "2026-09-15"
+            == booking_data["bookingdates"]["checkout"]
     )
 
 def test_update_booking(booking_client, auth_token):
@@ -121,17 +119,12 @@ def test_update_booking(booking_client, auth_token):
       """
 
     # Step 1: Create a booking
-    create_data = {
-        "firstname": "David",
-        "lastname": "Miller",
-        "totalprice": 200,
-        "depositpaid": True,
-        "bookingdates": {
-            "checkin": "2026-09-10",
-            "checkout": "2026-09-15"
-        },
-        "additionalneeds": "Breakfast"
-    }
+    create_data = create_valid_booking(
+        firstname="David",
+        lastname="Miller",
+        checkin="2026-09-10",
+        checkout="2026-09-15"
+    ).to_dict()
 
     create_response = booking_client.create_booking(create_data)
 
@@ -141,17 +134,15 @@ def test_update_booking(booking_client, auth_token):
     booking_id = create_response.json()["bookingid"]
 
     # Step 2: Prepare updated booking data
-    update_data = {
-        "firstname": "Robert",
-        "lastname": "Wilson",
-        "totalprice": 350,
-        "depositpaid": False,
-        "bookingdates": {
-            "checkin": "2026-10-01",
-            "checkout": "2026-10-07"
-        },
-        "additionalneeds": "Lunch"
-    }
+    update_data = create_valid_booking(
+        firstname="Robert",
+        lastname="Wilson",
+        totalprice=350,
+        depositpaid=False,
+        checkin="2026-10-01",
+        checkout="2026-10-07",
+        additionalneeds="Lunch"
+    ).to_dict()
 
     # Step 3: Update the booking
     update_response = booking_client.update_booking(
@@ -163,10 +154,10 @@ def test_update_booking(booking_client, auth_token):
     # Step 4: Verify response
     updated_data = update_response.json()
 
-    assert updated_data["firstname"] == "Robert"
-    assert updated_data["lastname"] == "Wilson"
-    assert updated_data["totalprice"] == 350
-    assert updated_data["depositpaid"] is False
+    assert updated_data["firstname"] == update_data["firstname"]
+    assert updated_data["lastname"] == update_data["lastname"]
+    assert updated_data["totalprice"] == update_data["totalprice"]
+    assert updated_data["depositpaid"] is update_data["depositpaid"]
 
     # Step 5: Retrieve booking again
     get_response = booking_client.get_booking(
@@ -179,27 +170,23 @@ def test_update_booking(booking_client, auth_token):
     retrieved_data = get_response.json()
 
     # Step 6: Verify persisted changes
-    assert retrieved_data["firstname"] == "Robert"
-    assert retrieved_data["lastname"] == "Wilson"
-    assert retrieved_data["totalprice"] == 350
-    assert retrieved_data["depositpaid"] is False
+    assert retrieved_data["firstname"] == update_data["firstname"]
+    assert retrieved_data["lastname"] == update_data["lastname"]
+    assert retrieved_data["totalprice"] == update_data["totalprice"]
+    assert retrieved_data["depositpaid"] is update_data["depositpaid"]
 
 def test_patch_booking(booking_client, auth_token):
     """
     Verify that selected booking fields can be partially updated.
     """
     # Step 1: Create a booking
-    create_data = {
-        "firstname": "Michael",
-        "lastname": "Brown",
-        "totalprice": 250,
-        "depositpaid": True,
-        "bookingdates": {
-            "checkin": "2026-10-10",
-            "checkout": "2026-10-15"
-        },
-        "additionalneeds": "Breakfast"
-    }
+    create_data = create_valid_booking(
+        firstname="Michael",
+        lastname="Brown",
+        totalprice=250,
+        checkin="2026-10-10",
+        checkout="2026-10-15"
+    ).to_dict()
 
     create_response = booking_client.create_booking(
         create_data
@@ -259,17 +246,14 @@ def test_delete_booking(booking_client, auth_token):
     """
 
     # Step 1: Create a booking
-    create_data = {
-        "firstname": "Delete",
-        "lastname": "Test",
-        "totalprice": 300,
-        "depositpaid": True,
-        "bookingdates": {
-            "checkin": "2026-11-01",
-            "checkout": "2026-11-05"
-        },
-        "additionalneeds": "Dinner"
-    }
+    create_data = create_valid_booking(
+        firstname="Delete",
+        lastname="Test",
+        totalprice=300,
+        checkin="2026-11-01",
+        checkout="2026-11-05",
+        additionalneeds="Dinner"
+    ).to_dict()
 
     create_response = booking_client.create_booking(
         create_data

@@ -1,6 +1,10 @@
 from api.clients.base_client import BaseClient
 import allure
 
+from api.endpoints.auth_endpoints import AUTHENTICATION
+from utilities import logger
+
+
 class AuthClient:
     """
     Handles API authentication operations.
@@ -29,6 +33,6 @@ class AuthClient:
         }
 
         return self.client.post(
-            "/auth",
+            AUTHENTICATION,
             json=payload
         )

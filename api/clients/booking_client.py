@@ -1,5 +1,7 @@
 import allure
 
+from api.clients.auth_headers import token_header
+from api.endpoints.booking_endpoints import booking_by_id, BOOKING
 from utilities.api_utils import attach_request_payload, attach_response
 
 
@@ -15,6 +17,10 @@ class BookingClient:
         """
         self.client = client
 
+    @allure.step("Get all bookings")
+    def get_booking(self):
+        return self.client.get(BOOKING)
+
     @allure.step("Get booking by ID: {booking_id}")
     def get_booking(self, booking_id):
         """
@@ -23,24 +29,30 @@ class BookingClient:
         :param booking_id: Booking ID
         :return: API response
         """
-        return self.client.get(f"/booking/{booking_id}")
+        return self.client.get(booking_by_id(booking_id))
 
-    @allure.step("Create a new booking")
+    # @allure.step("Create a new booking")
+    # def create_booking(self, booking_data):
+    #     """
+    #     Create a new booking.
+    #
+    #     :param booking_data: Booking request payload
+    #     :return: API response
+    #     """
+    #     attach_request_payload(booking_data)
+    #
+    #     response = self.client.post(BOOKING, json=booking_data)
+    #
+    #     attach_response(response)
+    #
+    #     return response
+
+    @allure.step("Create booking")
     def create_booking(self, booking_data):
-        """
-        Create a new booking.
-
-        :param booking_data: Booking request payload
-        :return: API response
-        """
-        attach_request_payload(booking_data)
-
-        response = self.client.post("/booking",
-                                json=booking_data,)
-
-        attach_response(response)
-
-        return response
+        return self.client.post(
+            BOOKING,
+            json=booking_data
+        )
 
     @allure.step("Update booking: {booking_id}")
     def update_booking(self, booking_id, booking_data, token):
@@ -53,13 +65,10 @@ class BookingClient:
         :return: API response
         """
 
-        headers = {
-            "Cookie": f"token={token}"
-        }
         return self.client.put(
-            f"/booking/{booking_id}",
+            booking_by_id(booking_id),
             json=booking_data,
-            headers=headers
+            headers=token_header(token)
         )
 
     @allure.step("Partially update booking: {booking_id}")
@@ -73,13 +82,10 @@ class BookingClient:
         :return: API response
         """
 
-        headers = {
-            "Cookie": f"token={token}"
-        }
         return self.client.patch(
-            f"/booking/{booking_id}",
+            booking_by_id(booking_id),
             json=booking_data,
-            headers=headers
+            headers=token_header(token)
         )
 
     @allure.step("Delete booking: {booking_id}")
@@ -92,13 +98,7 @@ class BookingClient:
         :return: API response
         """
 
-        headers = {
-            "cookie": f"token={token}"
-        }
-
         return self.client.delete(
-            f"/booking/{booking_id}",
-            headers=headers
+            booking_by_id(booking_id),
+            headers=token_header(token)
         )
-
-
