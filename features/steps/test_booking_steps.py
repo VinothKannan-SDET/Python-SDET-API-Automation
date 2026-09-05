@@ -8,6 +8,7 @@ from utilities.booking_assertions import (
     assert_booking_created,
     assert_booking_details
 )
+pytestmark = pytest.mark.bdd
 from utilities.schema_validator import validate_schema
 
 # Link this Python step-definition file with the booking.feature file.

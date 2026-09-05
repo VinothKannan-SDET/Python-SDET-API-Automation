@@ -9,12 +9,25 @@ from utilities.assertions import assert_status_code, assert_json_field_exists, a
 from utilities.schema_validator import validate_schema
 from test_data.booking_data import VALID_BOOKING_DATA, VALID_BOOKING_DATA_2
 
-
+@pytest.mark.smoke
+@pytest.mark.regression
+@pytest.mark.contract
 def test_get_booking(booking_client):
     """
     Verify that an existing booking can be retrieved.
     """
-    response = booking_client.get_booking(1)
+    booking_data = create_valid_booking(
+        firstname="Get",
+        lastname="Booking"
+    ).to_dict()
+
+    create_response = booking_client.create_booking(booking_data)
+
+    assert_status_code(create_response, 200)
+
+    booking_id = create_response.json()["bookingid"]
+
+    response = booking_client.get_booking(booking_id)
     assert_status_code(response, 200)
 
     assert_response_is_json(response)
@@ -26,11 +39,13 @@ def test_get_booking(booking_client):
     assert_json_field_exists(response_data, "lastname")
     assert_json_field_exists(response_data, "bookingdates")
 
-
 @pytest.mark.parametrize("firstname",
                          [pytest.param("John",id="firstname_John"),
                           pytest.param("David",id="firstname_David"),
                           pytest.param("Michael",id="firstname_Michael")])
+@pytest.mark.smoke
+@pytest.mark.regression
+@pytest.mark.contract
 def test_create_booking(booking_client, firstname):
     """
     Verify that a new booking can be created successfully.
@@ -62,6 +77,8 @@ def test_create_booking(booking_client, firstname):
     assert_nested_json_value(response_data, "booking.totalprice", booking_data["totalprice"])
     assert_nested_json_value(response_data, "booking.depositpaid", booking_data["depositpaid"])
 
+@pytest.mark.smoke
+@pytest.mark.regression
 def test_create_and_get_booking(booking_client):
     """
         Verify that a newly created booking can be retrieved
@@ -113,6 +130,7 @@ def test_create_and_get_booking(booking_client):
             == booking_data["bookingdates"]["checkout"]
     )
 
+@pytest.mark.regression
 def test_update_booking(booking_client, auth_token):
     """
       Verify that an existing booking can be fully updated.
@@ -175,6 +193,7 @@ def test_update_booking(booking_client, auth_token):
     assert retrieved_data["totalprice"] == update_data["totalprice"]
     assert retrieved_data["depositpaid"] is update_data["depositpaid"]
 
+@pytest.mark.regression
 def test_patch_booking(booking_client, auth_token):
     """
     Verify that selected booking fields can be partially updated.
@@ -240,6 +259,7 @@ def test_patch_booking(booking_client, auth_token):
     assert retrieved_data["lastname"] == "Brown"
     assert retrieved_data["depositpaid"] is True
 
+@pytest.mark.regression
 def test_delete_booking(booking_client, auth_token):
     """
     Verify that an existing booking can be deleted successfully.

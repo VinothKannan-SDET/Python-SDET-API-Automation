@@ -6,6 +6,8 @@ from utilities.api_utils import attach_response
 from utilities.assertions import assert_status_code
 
 
+@pytest.mark.negative
+@pytest.mark.regression
 @allure.title("Verify GET booking with invalid booking ID")
 def test_get_booking_invalid_id(booking_client):
     """
@@ -24,6 +26,8 @@ def test_get_booking_invalid_id(booking_client):
 @pytest.mark.parametrize("invalid_booking_data", [
     pytest.param(INVALID_BOOKING_DATA, id = "Missing_required_fields")
 ])
+@pytest.mark.negative
+@pytest.mark.regression
 def test_create_booking_invalid_payload(booking_client, invalid_booking_data):
     """
     Verify that booking creation handles an invalid payload.
@@ -39,6 +43,8 @@ def test_create_booking_invalid_payload(booking_client, invalid_booking_data):
     assert_status_code(response, 500)
     assert response.text == "Internal Server Error"
 
+@pytest.mark.negative
+@pytest.mark.regression
 @allure.title("Verify authentication with invalid credentials")
 def test_generate_auth_token_invalid_credentials(auth_client):
     """

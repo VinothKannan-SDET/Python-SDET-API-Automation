@@ -1,5 +1,7 @@
+import pytest
 
-
+@pytest.mark.smoke
+@pytest.mark.regression
 def test_generate_auth_token(auth_client, config):
     """
     Verify that the authentication API generates a token.
