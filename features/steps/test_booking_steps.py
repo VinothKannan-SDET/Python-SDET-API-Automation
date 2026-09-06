@@ -107,25 +107,8 @@ def verify_booking_details(booking_context):
         booking_context["data"]
     )
 
-@allure.step("Verify booking first name: {firstname}")
-@then(parsers.parse('the booking first name should be "{firstname}"'))
-def verify_booking_first_name(booking_context, firstname):
-    """
-    Verify that the API response contains
-    the firstname supplied by the Scenario Outline.
-    """
-    response = booking_context["response"]
-    response_data = response.json()
-
-    # assert_nested_json_value(
-    #     response_data,
-    #     "booking.firstname",
-    #     firstname
-    # )
-
 @allure.step("Verify booking first name is {firstname}")
-@then(parsers.parse(
-    'the booking first name should be "{firstname}"'))
+@then(parsers.parse('the booking first name should be "{firstname}"'))
 def verify_booking_first_name(booking_context, firstname):
 
     response_data = booking_context["response"].json()

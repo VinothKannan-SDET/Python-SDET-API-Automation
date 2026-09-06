@@ -1,6 +1,5 @@
 from configparser import ConfigParser
 import os
-
 from dotenv import load_dotenv
 
 class ConfigReader:
