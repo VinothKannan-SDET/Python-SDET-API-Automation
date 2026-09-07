@@ -3,6 +3,7 @@ import pytest
 from pytest_bdd import scenarios, given, when, then, parsers
 from schemas.create_booking_schema import CREATE_BOOKING_RESPONSE_SCHEMA
 from test_data.booking_data import VALID_BOOKING_DATA
+from test_data.booking_factory import create_updated_booking
 from utilities.assertions import assert_response_is_json, assert_status_code, assert_nested_json_value
 from utilities.booking_assertions import (
     assert_booking_created,
@@ -155,17 +156,7 @@ def verify_retrieved_booking_details(booking_context):
 @given("I have updated booking details")
 def updated_booking_details(booking_context):
 
-    booking_context["updated_data"] = {
-        "firstname": "Robert",
-        "lastname": "Wilson",
-        "totalprice": 350,
-        "depositpaid": False,
-        "bookingdates": {
-            "checkin": "2026-10-01",
-            "checkout": "2026-10-07"
-        },
-        "additionalneeds": "Lunch"
-    }
+    booking_context["updated_data"] = create_updated_booking().to_dict()
 
 @allure.step("Update the created booking")
 @when("I update the created booking")

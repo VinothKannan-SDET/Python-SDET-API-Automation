@@ -48,3 +48,14 @@ def create_booking_with_high_price():
     return create_valid_booking(
         totalprice=10000
     )
+
+def create_updated_booking():
+    return create_valid_booking(
+        firstname="Robert",
+        lastname="Wilson",
+        totalprice=350,
+        depositpaid=False,
+        checkin="2026-10-01",
+        checkout="2026-10-07",
+        additionalneeds="Lunch",
+    )

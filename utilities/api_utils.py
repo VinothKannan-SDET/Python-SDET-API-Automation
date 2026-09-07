@@ -1,5 +1,5 @@
 import json
-
+from utilities.security_utils import sanitize_payload
 import allure
 
 
@@ -39,11 +39,10 @@ def attach_request_payload(payload):
     :param payload: Request JSON payload
     """
 
+    sanitized_payload = sanitize_payload(payload)
+
     allure.attach(
-        json.dumps(
-            payload,
-            indent=4
-        ),
+        json.dumps(sanitized_payload, indent=4),
         name="Request Payload",
         attachment_type=allure.attachment_type.JSON
     )

@@ -1,6 +1,8 @@
 import logging
 import os
 
+from utilities.security_utils import sanitize_payload
+
 
 def get_logger(name):
     """
@@ -12,7 +14,8 @@ def get_logger(name):
 
     os.makedirs("logs", exist_ok=True)
 
-    logger = logging.getLogger(name)
+    safe_data = sanitize_payload(name)
+    logger = logging.getLogger(safe_data)
 
     if not logger.handlers:
 

@@ -18,7 +18,7 @@ class BookingClient:
         self.client = client
 
     @allure.step("Get all bookings")
-    def get_booking(self):
+    def get_all_bookings(self):
         return self.client.get(BOOKING)
 
     @allure.step("Get booking by ID: {booking_id}")
