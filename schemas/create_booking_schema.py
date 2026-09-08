@@ -18,8 +18,11 @@ CREATE_BOOKING_RESPONSE_SCHEMA = {
                         "checkin": {"type": "string"},
                         "checkout": {"type": "string"}
                     },
-                },
-            }
+                    "additionalProperties": True
+                }
+            },
+            "additionalProperties": True
         }
-    }
+    },
+    "additionalProperties": True
 }

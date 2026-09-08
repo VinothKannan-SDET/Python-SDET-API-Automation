@@ -1,4 +1,3 @@
-import json
 import allure
 import pytest
 from schemas.booking_schema import BOOKING_RESPONSE_SCHEMA
@@ -54,12 +53,6 @@ def test_create_booking(booking_client, firstname):
     booking_data = create_valid_booking(
         firstname=firstname
     ).to_dict()
-
-    allure.attach(
-        json.dumps(booking_data, indent=4),
-        name="Request Payload",
-        attachment_type=allure.attachment_type.JSON
-    )
 
     response = booking_client.create_booking(booking_data)
 

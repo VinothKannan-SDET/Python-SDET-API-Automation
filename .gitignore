@@ -10,19 +10,13 @@ env/
 # Environment variables
 .env
 .env.*
-
-# Allow environment template
 !.env.example
 
-# Pytest
+# Test/runtime output
 .pytest_cache/
-
-# Reports
 reports/
 allure-results/
 allure-report/
-
-# Logs
 logs/
 *.log
 
