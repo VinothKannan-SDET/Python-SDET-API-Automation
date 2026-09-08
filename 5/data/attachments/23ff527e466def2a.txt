@@ -1,0 +1,4 @@
+INFO     api.clients.base_client:base_client.py:26 POST request: https://restful-booker.herokuapp.com/booking
+INFO     api.clients.base_client:base_client.py:36 POST response 200
+INFO     api.clients.base_client:base_client.py:26 PATCH request: https://restful-booker.herokuapp.com/booking/4691
+INFO     api.clients.base_client:base_client.py:36 PATCH response 403

@@ -1,0 +1,10 @@
+INFO     api.clients.base_client:base_client.py:26 POST request: https://restful-booker.herokuapp.com/auth
+INFO     api.clients.base_client:base_client.py:36 POST response 200
+INFO     api.clients.base_client:base_client.py:26 POST request: https://restful-booker.herokuapp.com/booking
+INFO     api.clients.base_client:base_client.py:36 POST response 200
+INFO     api.clients.base_client:base_client.py:26 GET request: https://restful-booker.herokuapp.com/booking/4680
+INFO     api.clients.base_client:base_client.py:36 GET response 200
+INFO     api.clients.base_client:base_client.py:26 DELETE request: https://restful-booker.herokuapp.com/booking/4680
+INFO     api.clients.base_client:base_client.py:36 DELETE response 201
+INFO     api.clients.base_client:base_client.py:26 GET request: https://restful-booker.herokuapp.com/booking/4680
+INFO     api.clients.base_client:base_client.py:36 GET response 404
