@@ -45,8 +45,8 @@ jobs:
         continue-on-error: true
         uses: actions/checkout@v4
         with:
-          ref: gh-pages
-          path: gh-pages
+          ref: main
+          path: main
           fetch-depth: 1
 
       - name: Load previous Allure history and generate HTML report
@@ -56,7 +56,7 @@ jobs:
         with:
           allure_results: allure-results
           allure_report: allure-report
-          gh_pages: gh-pages
+          gh_pages: main
           allure_history: allure-history
 
       - name: Upload JUnit report
@@ -85,10 +85,10 @@ jobs:
 
       - name: Publish Allure history to GitHub Pages branch
         if: always() && github.event_name != 'pull_request'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-main@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
+          publish_branch: main
           publish_dir: allure-history
           force_orphan: false
 
@@ -97,5 +97,5 @@ jobs:
         shell: bash
         run: |
           echo "## Allure Report" >> "$GITHUB_STEP_SUMMARY"
-          echo "The interactive report is published to the gh-pages branch for pushes to main." >> "$GITHUB_STEP_SUMMARY"
+          echo "The interactive report is published to the main branch for pushes to main." >> "$GITHUB_STEP_SUMMARY"
           echo "Expected URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> "$GITHUB_STEP_SUMMARY"
